@@ -307,6 +307,7 @@ class ImmudbWrapper(ImmudbClient):
             'Kind': 'file',
             'Size': self.get_size_format(self.get_file_size(file)),
             'Hash': hash_file,
+            'Signer': self.username,
             'Metadata': {
                 **self.default_metadata,
                 **user_metadata,
@@ -338,6 +339,7 @@ class ImmudbWrapper(ImmudbClient):
             'Kind': 'git',
             'Size': self.get_size_format(self.get_directory_size(repo_path)),
             'Hash': metadata_hash,
+            'Signer': self.username,
             'Metadata': {
                 'git': git_metadata['git'],
                 **self.default_metadata,
