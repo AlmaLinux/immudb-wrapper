@@ -295,6 +295,57 @@ print(response)
           '>\n'}
 ```
 
+### User creation
+
+```python3
+from immudb.constants import (
+    PERMISSION_SYS_ADMIN,
+    PERMISSION_ADMIN,
+    PERMISSION_NONE,
+    PERMISSION_R,
+    PERMISSION_RW,
+)
+
+# See the "ImmudbClient.createUser" method
+# https://github.com/codenotary/immudb-py/blob/master/immudb/client.py
+client.createUser(
+    user='username',
+    password='password',
+    permission=PERMISSION_RW,
+)
+```
+
+### Changing password
+
+```python3
+# See the "ImmudbClient.changePassword" method
+# https://github.com/codenotary/immudb-py/blob/master/immudb/client.py
+client.changePassword(
+    user='username',
+    newPassword='new_password',
+    oldPassword='old_password',
+)
+```
+
+### Database creation
+
+```python3
+# See the "ImmudbClient.createDatabase" or "ImmudbClient.createDatabaseV2" methods
+# https://github.com/codenotary/immudb-py/blob/master/immudb/client.py
+# https://github.com/codenotary/immudb-py/blob/master/immudb/datatypesv2.py
+from immudb.datatypesv2 import DatabaseSettingsV2
+
+client.createDatabase(
+    dbName=b'database',
+)
+
+client.createDatabaseV2(
+    name='database',
+    settings=DatabaseSettingsV2(...),
+    ifNotExists=True,
+)
+```
+
 ## Contribution
 
 If you wish to contribute to `immudb_wrapper`, just create a fork and make a PR.
