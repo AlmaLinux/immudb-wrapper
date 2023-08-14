@@ -6,7 +6,7 @@ import re
 from dataclasses import asdict
 from pathlib import Path
 from traceback import format_exc
-from typing import IO, Any, Dict, Optional, Union
+from typing import IO, Any, Dict, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 from git import Repo
@@ -73,7 +73,17 @@ class ImmudbWrapper(ImmudbClient):
 
     @classmethod
     def get_version(cls) -> str:
-        return "0.1.0"
+        return '0.1.0'
+
+    @property
+    @classmethod
+    def read_only_username(cls) -> str:
+        return 'sbom_public_almalinux'
+
+    @property
+    @classmethod
+    def read_only_password(cls) -> str:
+        return '%VF%414Ibmsk'
 
     def encode(
         self,
@@ -113,19 +123,19 @@ class ImmudbWrapper(ImmudbClient):
             1253656678 => '1.17 GB'
         """
         for unit in [
-            "",
-            "K",
-            "M",
-            "G",
-            "T",
-            "P",
-            "E",
-            "Z",
+            '',
+            'K',
+            'M',
+            'G',
+            'T',
+            'P',
+            'E',
+            'Z',
         ]:
             if value < factor:
-                return f"{value:.2f} {unit}{suffix}"
+                return f'{value:.2f} {unit}{suffix}'
             value /= factor
-        return f"{value:.2f} Y{suffix}"
+        return f'{value:.2f} Y{suffix}'
 
     def get_directory_size(self, path: Union[str, os.PathLike]) -> int:
         return sum(file.stat().st_size for file in Path(path).rglob('*'))
@@ -188,7 +198,7 @@ class ImmudbWrapper(ImmudbClient):
                 buff = _fd.read(buff_size)
 
         if isinstance(file_path, str):
-            with open(file_path, "rb") as fd:
+            with open(file_path, 'rb') as fd:
                 feed_hasher(fd)
         else:
             file_path.seek(0)
