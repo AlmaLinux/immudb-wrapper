@@ -6,7 +6,7 @@ import re
 from dataclasses import asdict
 from pathlib import Path
 from traceback import format_exc
-from typing import IO, Any, Dict, Optional, Tuple, Union
+from typing import IO, Any, Dict, Optional, Union
 from urllib.parse import urlparse
 
 from git import Repo
@@ -84,6 +84,16 @@ class ImmudbWrapper(ImmudbClient):
     @classmethod
     def read_only_password(cls) -> str:
         return '%VF%414Ibmsk'
+
+    @property
+    @classmethod
+    def almalinux_database_address(cls) -> str:
+        return 'pulpdb01.awsuseast1.almalinux.org'
+
+    @property
+    @classmethod
+    def almalinux_database_name(cls) -> str:
+        return 'almalinux'
 
     def encode(
         self,
