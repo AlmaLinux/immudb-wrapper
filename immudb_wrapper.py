@@ -68,6 +68,7 @@ class ImmudbWrapper(ImmudbClient):
         self.login(
             username=self.username,
             password=self.password,
+            database=self.encode(self.database),
         )
         self.useDatabase(self.encode(self.database))
 
