@@ -76,22 +76,18 @@ class ImmudbWrapper(ImmudbClient):
     def get_version(cls) -> str:
         return '0.1.0'
 
-    @property
     @classmethod
     def read_only_username(cls) -> str:
         return 'sbom_public_almalinux'
 
-    @property
     @classmethod
     def read_only_password(cls) -> str:
         return '%VF%414Ibmsk'
 
-    @property
     @classmethod
     def almalinux_database_address(cls) -> str:
-        return 'pulpdb01.awsuseast1.almalinux.org'
+        return 'pulpdb01.awsuseast1.almalinux.org:3322'
 
-    @property
     @classmethod
     def almalinux_database_name(cls) -> str:
         return 'almalinux'
