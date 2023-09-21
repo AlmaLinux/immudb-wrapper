@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='immudb_wrapper',
-    version='0.1.0',
+    version='0.1.1',
     author='Daniil Anfimov',
     author_email='anfimovdan@gmail.com',
     description=(
