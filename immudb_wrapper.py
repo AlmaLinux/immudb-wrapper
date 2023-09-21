@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 
 from git import Repo
 from grpc import RpcError
+from grpc._channel import _InactiveRpcError
 from immudb import ImmudbClient
 from immudb.datatypes import SafeGetResponse
 from immudb.rootService import RootService
@@ -65,16 +66,20 @@ class ImmudbWrapper(ImmudbClient):
             timeout=timeout,
             max_grpc_message_length=max_grpc_message_length,
         )
-        self.login(
+        self.login()
+
+    def login(self):
+        encoded_database = self.encode(self.database)
+        super().login(
             username=self.username,
             password=self.password,
-            database=self.encode(self.database),
+            database=encoded_database,
         )
-        self.useDatabase(self.encode(self.database))
+        self.useDatabase(encoded_database)
 
     @classmethod
     def get_version(cls) -> str:
-        return '0.1.0'
+        return '0.1.1'
 
     @classmethod
     def read_only_username(cls) -> str:
@@ -107,6 +112,15 @@ class ImmudbWrapper(ImmudbClient):
                 "Cannot encode value that isn't str, bytes or dict."
             )
         return result
+
+    def check_database_state(self):
+        try:
+            self.currentState()
+        except _InactiveRpcError as exc:
+            exc_details = exc.details()
+            if not exc_details or 'token has expired' not in exc_details:
+                raise exc
+            self.login()
 
     def to_dict(
         self,
@@ -302,6 +316,7 @@ class ImmudbWrapper(ImmudbClient):
         key: str,
         value: Union[str, bytes, Dict],
     ) -> Dict:
+        self.check_database_state()
         result = self.verified_set(key, value)
         if 'error' in result:
             return result
@@ -372,6 +387,7 @@ class ImmudbWrapper(ImmudbClient):
         self,
         key: Union[str, bytes],
     ) -> Dict:
+        self.check_database_state()
         return self.verified_get(key)
 
     def authenticate_file(self, file: str) -> Dict:
