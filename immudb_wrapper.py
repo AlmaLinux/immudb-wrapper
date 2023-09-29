@@ -79,7 +79,7 @@ class ImmudbWrapper(ImmudbClient):
 
     @classmethod
     def get_version(cls) -> str:
-        return '0.1.1'
+        return '0.1.2'
 
     @classmethod
     def read_only_username(cls) -> str:
@@ -112,15 +112,6 @@ class ImmudbWrapper(ImmudbClient):
                 "Cannot encode value that isn't str, bytes or dict."
             )
         return result
-
-    def check_database_state(self):
-        try:
-            self.currentState()
-        except _InactiveRpcError as exc:
-            exc_details = exc.details()
-            if not exc_details or 'token has expired' not in exc_details:
-                raise exc
-            self.login()
 
     def to_dict(
         self,
@@ -316,7 +307,7 @@ class ImmudbWrapper(ImmudbClient):
         key: str,
         value: Union[str, bytes, Dict],
     ) -> Dict:
-        self.check_database_state()
+        self.login()
         result = self.verified_set(key, value)
         if 'error' in result:
             return result
@@ -387,7 +378,7 @@ class ImmudbWrapper(ImmudbClient):
         self,
         key: Union[str, bytes],
     ) -> Dict:
-        self.check_database_state()
+        self.login()
         return self.verified_get(key)
 
     def authenticate_file(self, file: str) -> Dict:
