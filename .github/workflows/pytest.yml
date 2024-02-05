@@ -1,0 +1,51 @@
+name: pytest
+on:
+  pull_request:
+    branches:
+      - "**"
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+        name: Check out repository
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Prepare python env
+        run: |
+          python -m venv env
+          env/bin/python -m pip install -U pip
+          env/bin/python -m pip install GitPython immudb-py pytest pytest-cov
+      - name: Run unit tests (pytest)
+        run: set -o pipefail && env/bin/python -m pytest -v --cov-report term-missing:skip-covered
+             --cov-report xml:/tmp/coverage.xml --junitxml=/tmp/pytest.xml
+             --cov=immudb_wrapper tests/ | tee /tmp/pytest-coverage.txt
+      - name: Pytest coverage comment
+        uses: MishaKav/pytest-coverage-comment@main
+        id: coverageComment
+        with:
+          pytest-coverage-path: /tmp/pytest-coverage.txt
+          pytest-xml-coverage-path: /tmp/coverage.xml
+          title: Coverage report for changed files
+          badge-title: Total coverage
+          hide-badge: false
+          hide-report: false
+          report-only-changed-files: true
+          hide-comment: false
+          remove-link-from-badge: false
+          junitxml-path: /tmp/pytest.xml
+      - name: Create the Badge
+        if: ${{ github.ref == 'refs/heads/main' && steps.coverageComment.outputs.coverage }}
+        uses: schneegans/dynamic-badges-action@v1.6.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: f42f75130b3f9c68b5a96f14186d073c
+          filename: immudb-wrapper-badge__main.json
+          label: Test Coverage
+          message: ${{ steps.coverageComment.outputs.coverage }}
+          color: ${{ steps.coverageComment.outputs.color }}
+          namedLogo: pytest

@@ -1,5 +1,7 @@
 # immudb_wrapper
 
+[![badges](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/maccelf/f42f75130b3f9c68b5a96f14186d073c/raw/immudb-wrapper-badge__main.json)](https://github.com/AlmaLinux/immudb-wrapper/blob/main/README.md)
+
 The wrapper around the SDK client `immudb-py` from project Codenotary, which expands the functionality of the original client with additional functions.
 
 ## Table of Contents
