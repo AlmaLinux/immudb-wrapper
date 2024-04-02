@@ -25,8 +25,6 @@ setup(
     install_requires=[
         'GitPython>=3.1.20',
         'immudb-py>=1.4.0',
-        'googleapis-common-protos==1.61.0',
-        'protobuf==3.20.3',
     ],
     python_requires='>=3.7',
 )
