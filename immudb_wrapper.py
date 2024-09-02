@@ -195,7 +195,7 @@ class ImmudbWrapper(ImmudbClient):
         return f'{value:.2f} Y{suffix}'
 
     def get_directory_size(self, path: Union[str, os.PathLike]) -> int:
-        return sum(file.stat().st_size for file in Path(path).rglob('*'))
+        return sum(file.stat().st_size for file in Path(path).rglob('*') if file.exists())
 
     def get_file_size(self, file_path: Union[str, os.PathLike]) -> int:
         return Path(file_path).stat().st_size
