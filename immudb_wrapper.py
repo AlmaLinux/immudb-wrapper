@@ -347,7 +347,7 @@ class ImmudbWrapper(ImmudbClient):
         except RpcError:
             return {'error': format_exc()}
 
-    @retry(possible_exc_details=['Connection timed out'])
+    @retry(possible_exc_details=['Connection timed out', 'Socket closed'])
     def notarize(
         self,
         key: str,
@@ -420,7 +420,7 @@ class ImmudbWrapper(ImmudbClient):
             value=payload,
         )
 
-    @retry(possible_exc_details=['Connection timed out'])
+    @retry(possible_exc_details=['Connection timed out', 'Socket closed'])
     def authenticate(
         self,
         key: Union[str, bytes],
