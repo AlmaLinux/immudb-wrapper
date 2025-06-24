@@ -29,7 +29,7 @@ Dict = Dict[str, Any]
 
 POSSIBLE_EXC_DETAILS = (
     'Connection timed out',
-    'Socker closed',
+    'Socket closed',
     'Connection reset by peer',
 )
 
