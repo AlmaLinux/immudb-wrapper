@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='immudb_wrapper',
-    version='0.1.8',
+    version='0.1.9',
     author='Daniil Anfimov',
     author_email='anfimovdan@gmail.com',
     description=(
@@ -24,7 +24,12 @@ setup(
     scripts=['immudb_wrapper.py'],
     install_requires=[
         'GitPython>=3.1.20',
-        'immudb-py>=1.4.0',
+        # immudb-py 1.5 pulls protobuf>=4, whose PEP420 `google` namespace is
+        # broken by the stray `google-api` package immudb-py depends on, so
+        # `import google.protobuf` fails. Cap at <1.5 and keep protobuf on the
+        # 3.x line (pkg_resources namespace) which tolerates google-api.
+        'immudb-py>=1.4.0,<1.5',
+        'protobuf<4',
     ],
     python_requires='>=3.7',
 )
