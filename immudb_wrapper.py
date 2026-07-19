@@ -31,6 +31,7 @@ POSSIBLE_EXC_DETAILS = (
     'Connection timed out',
     'Socket closed',
     'Connection reset by peer',
+    'failed to connect to all addresses',
 )
 
 
