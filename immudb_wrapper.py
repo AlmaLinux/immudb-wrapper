@@ -18,7 +18,7 @@ from typing import (
 from urllib.parse import urlparse
 
 from git import Repo
-from grpc import RpcError
+from grpc import RpcError, StatusCode
 from grpc._channel import _InactiveRpcError
 from immudb import ImmudbClient
 from immudb.datatypes import SafeGetResponse
@@ -31,6 +31,11 @@ POSSIBLE_EXC_DETAILS = (
     'Connection timed out',
     'Socket closed',
     'Connection reset by peer',
+)
+
+TOKEN_REJECTED_CODES = (
+    StatusCode.UNAUTHENTICATED,
+    StatusCode.PERMISSION_DENIED,
 )
 
 
@@ -329,6 +334,22 @@ class ImmudbWrapper(ImmudbClient):
             'sbom_api_ver': '0.2',
         }
 
+    def _call(self, method, **kwargs):
+        """
+        Runs a client call, logging in again once if the token was rejected,
+        so a long-lived client does not have to log in before every call.
+        immudb answers an expired token with PERMISSION_DENIED and a missing
+        or unknown one with UNAUTHENTICATED.
+        """
+        try:
+            return method(**kwargs)
+        except RpcError as exc:
+            if exc.code() not in TOKEN_REJECTED_CODES:
+                raise
+            self.logger.info('immudb token rejected, logging in again')
+            self.login()
+            return method(**kwargs)
+
     def verified_get(
         self,
         key: Union[str, bytes],
@@ -336,7 +357,8 @@ class ImmudbWrapper(ImmudbClient):
     ) -> Dict:
         try:
             return self.to_dict(
-                self.verifiedGet(
+                self._call(
+                    self.verifiedGet,
                     key=self.encode(key),
                     atRevision=revision,
                 ),
@@ -351,7 +373,8 @@ class ImmudbWrapper(ImmudbClient):
     ) -> Dict:
         try:
             return asdict(
-                self.verifiedSet(
+                self._call(
+                    self.verifiedSet,
                     key=self.encode(key),
                     value=self.encode(value),
                 ),
@@ -365,7 +388,6 @@ class ImmudbWrapper(ImmudbClient):
         key: str,
         value: Union[str, bytes, Dict],
     ) -> Dict:
-        self.login()
         result = self.verified_set(key, value)
         if 'error' in result:
             return result
@@ -437,7 +459,6 @@ class ImmudbWrapper(ImmudbClient):
         self,
         key: Union[str, bytes],
     ) -> Dict:
-        self.login()
         return self.verified_get(key)
 
     def authenticate_file(self, file: str) -> Dict:
